@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { ChartBarIcon, DocumentArrowDownIcon, AcademicCapIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { apiService } from '@/services/api'
 import { Student, Course } from '@/types'
+import EnrollmentChart from '@/components/Charts/EnrollmentChart'
+import TopStudentsChart from '@/components/Charts/TopStudentsChart'
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(false)
@@ -61,7 +63,7 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
             onClick={() => handleExport('students')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
           >
             <div className="flex items-center min-w-0">
               <UsersIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -75,7 +77,7 @@ export default function ReportsPage() {
 
           <button
             onClick={() => handleExport('courses')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
           >
             <div className="flex items-center min-w-0">
               <AcademicCapIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -89,7 +91,7 @@ export default function ReportsPage() {
 
           <button
             onClick={() => handleExport('grades')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 sm:col-span-2 lg:col-span-1"
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 sm:col-span-2 lg:col-span-1"
           >
             <div className="flex items-center min-w-0">
               <ChartBarIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -103,10 +105,16 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Reports */}
+      {/* Charts Section */}
+      <div className="space-y-6">
+        <EnrollmentChart />
+        <TopStudentsChart />
+      </div>
+
+      {/* Quick Reports */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Students</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Performance</h3>
           {loading ? (
             <div className="p-8 text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
@@ -114,20 +122,17 @@ export default function ReportsPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {topStudents.map((student, index) => (
-                <div key={student.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div className="flex items-center min-w-0">
-                    <span className="text-sm font-medium text-gray-900 mr-2">{index + 1}.</span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{student.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{student.major}</p>
-                    </div>
-                  </div>
+              {[
+                { label: 'Average GPA', value: '3.45', change: '+0.2' },
+                { label: 'Pass Rate', value: '94%', change: '+2%' },
+                { label: 'Top Student GPA', value: topStudents[0]?.gpa.toFixed(2) || '3.92', change: '+0.1' },
+                { label: 'Course Completion', value: '89%', change: '+3%' },
+              ].map((item, index) => (
+                <div key={index} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-sm text-gray-600">{item.label}</span>
                   <div className="flex items-center">
-                    <span className="font-semibold text-gray-900">{student.gpa.toFixed(2)}</span>
-                    <span className="ml-2 text-sm text-green-600">
-                      GPA
-                    </span>
+                    <span className="font-semibold text-gray-900">{item.value}</span>
+                    <span className="ml-2 text-sm text-green-600">{item.change}</span>
                   </div>
                 </div>
               ))}
@@ -136,27 +141,21 @@ export default function ReportsPage() {
         </div>
 
         <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Courses</h3>
-          {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading data...</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {popularCourses.map((course) => (
-                <button key={course.id} className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <p className="text-sm font-medium text-gray-900 truncate">{course.title}</p>
-                  <div className="flex justify-between items-center mt-1">
-                    <p className="text-xs text-gray-500">{course.code}</p>
-                    <p className="text-xs font-medium text-gray-900">
-                      {course.enrolledStudents} students
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Reports</h3>
+          <div className="space-y-3">
+            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              <p className="text-sm font-medium text-gray-900">Enrollment Summary</p>
+              <p className="text-xs text-gray-500 mt-1">Current semester enrollment statistics</p>
+            </button>
+            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              <p className="text-sm font-medium text-gray-900">Faculty Workload</p>
+              <p className="text-xs text-gray-500 mt-1">Courses and students per faculty</p>
+            </button>
+            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              <p className="text-sm font-medium text-gray-900">Department Performance</p>
+              <p className="text-xs text-gray-500 mt-1">Academic performance by department</p>
+            </button>
+          </div>
         </div>
       </div>
     </div>

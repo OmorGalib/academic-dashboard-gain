@@ -23,7 +23,7 @@ export const mockData = {
   ],
 
   courses: [
-    { id: 'CSC101', title: 'Introduction to Computer Science', code: 'CSC101', description: 'Fundamentals of programming and computer science', faculty: 'Prof. Smith', facultyId: 'FAC101', enrolledStudents: 45, maxCapacity: 50, credits: 3, department: 'Computer Science', semester: 'Fall 2024' },
+    { id: 'CSC101', title: 'Computer Science', code: 'CSC101', description: 'Fundamentals of programming and computer science', faculty: 'Prof. Smith', facultyId: 'FAC101', enrolledStudents: 45, maxCapacity: 50, credits: 3, department: 'Computer Science', semester: 'Fall 2024' },
     { id: 'MAT201', title: 'Calculus II', code: 'MAT201', description: 'Advanced calculus topics and applications', faculty: 'Prof. Johnson', facultyId: 'FAC102', enrolledStudents: 189, maxCapacity: 200, credits: 4, department: 'Mathematics', semester: 'Fall 2024' },
     { id: 'PHY101', title: 'Physics I', code: 'PHY101', description: 'Classical mechanics and thermodynamics', faculty: 'Prof. Brown', facultyId: 'FAC103', enrolledStudents: 178, maxCapacity: 180, credits: 4, department: 'Physics', semester: 'Fall 2024' },
     { id: 'BIO101', title: 'Biology Fundamentals', code: 'BIO101', description: 'Introduction to cellular and molecular biology', faculty: 'Prof. Wilson', facultyId: 'FAC104', enrolledStudents: 165, maxCapacity: 170, credits: 3, department: 'Biology', semester: 'Fall 2024' },

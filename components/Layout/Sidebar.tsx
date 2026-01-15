@@ -17,8 +17,7 @@ const navigation = [
   { name: 'Students', href: '/students', icon: UsersIcon },
   { name: 'Courses', href: '/courses', icon: BookOpenIcon },
   { name: 'Faculty', href: '/faculty', icon: AcademicCapIcon },
-  { name: 'Reports', href: '/reports', icon: ChartBarIcon },
-  { name: 'Export', href: '/export', icon: DocumentArrowDownIcon },
+  { name: 'Reports', href: '/reports', icon: ChartBarIcon }
 ];
 
 const Sidebar: React.FC = () => {

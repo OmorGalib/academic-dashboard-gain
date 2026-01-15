@@ -57,3 +57,21 @@ export interface DashboardStats {
   averageGPA: number;
   totalEnrollments: number;
 }
+
+export interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string[];
+    borderColor: string[];
+    borderWidth: number;
+  }[];
+}
+
+export interface ExportData {
+  type: 'students' | 'courses' | 'grades';
+  data: any[];
+  filename: string;
+  timestamp: string;
+}
