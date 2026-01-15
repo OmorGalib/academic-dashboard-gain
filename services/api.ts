@@ -26,6 +26,7 @@ export const apiService = {
     search?: string;
     year?: number;
     major?: string;
+    status?: string;
     page?: number;
     limit?: number;
   }): Promise<{ students: Student[]; total: number }> {
@@ -36,7 +37,8 @@ export const apiService = {
       filtered = filtered.filter(
         (s) =>
           s.name.toLowerCase().includes(params.search!.toLowerCase()) ||
-          s.email.toLowerCase().includes(params.search!.toLowerCase())
+          s.email.toLowerCase().includes(params.search!.toLowerCase()) ||
+          s.id.toLowerCase().includes(params.search!.toLowerCase())
       );
     }
 
@@ -44,8 +46,12 @@ export const apiService = {
       filtered = filtered.filter((s) => s.year === params.year);
     }
 
-    if (params?.major) {
+    if (params?.major && params.major !== 'All Majors') {
       filtered = filtered.filter((s) => s.major === params.major);
+    }
+
+    if (params?.status) {
+      filtered = filtered.filter((s) => s.status === params.status);
     }
 
     const page = params?.page || 1;
@@ -64,6 +70,17 @@ export const apiService = {
     return mockData.students.find((s) => s.id === id);
   },
 
+  async createStudent(data: Omit<Student, 'id'>): Promise<Student> {
+    await delay(400);
+    const newStudent: Student = {
+      ...data,
+      id: `STU${1000 + mockData.students.length + 1}`,
+      avatar: data.name.toLowerCase().replace(/\s+/g, '-')
+    };
+    mockData.students.push(newStudent);
+    return newStudent;
+  },
+
   async updateStudent(id: string, data: Partial<Student>): Promise<Student> {
     await delay(400);
     const index = mockData.students.findIndex((s) => s.id === id);
@@ -71,6 +88,14 @@ export const apiService = {
 
     mockData.students[index] = { ...mockData.students[index], ...data };
     return mockData.students[index];
+  },
+
+  async deleteStudent(id: string): Promise<void> {
+    await delay(300);
+    const index = mockData.students.findIndex((s) => s.id === id);
+    if (index !== -1) {
+      mockData.students.splice(index, 1);
+    }
   },
 
   // Courses
@@ -88,7 +113,8 @@ export const apiService = {
       filtered = filtered.filter(
         (c) =>
           c.title.toLowerCase().includes(params.search!.toLowerCase()) ||
-          c.code.toLowerCase().includes(params.search!.toLowerCase())
+          c.code.toLowerCase().includes(params.search!.toLowerCase()) ||
+          c.faculty.toLowerCase().includes(params.search!.toLowerCase())
       );
     }
 
@@ -111,16 +137,31 @@ export const apiService = {
     };
   },
 
+  async getCourseById(id: string): Promise<Course | undefined> {
+    await delay(200);
+    return mockData.courses.find((c) => c.id === id);
+  },
+
   // Faculty
   async getFaculty(): Promise<Faculty[]> {
     await delay(300);
     return mockData.faculty;
   },
 
+  async getFacultyById(id: string): Promise<Faculty | undefined> {
+    await delay(200);
+    return mockData.faculty.find((f) => f.id === id);
+  },
+
   // Grades
   async getStudentGrades(studentId: string): Promise<Grade[]> {
     await delay(200);
     return mockData.grades.filter((g) => g.studentId === studentId);
+  },
+
+  async getCourseGrades(courseId: string): Promise<Grade[]> {
+    await delay(200);
+    return mockData.grades.filter((g) => g.courseId === courseId);
   },
 
   async updateGrade(data: {
@@ -150,27 +191,41 @@ export const apiService = {
     return newGrade;
   },
 
-  // Reports
+  // Analytics
   async getCourseEnrollments(): Promise<
-    { course: string; enrollments: number }[]
+    { course: string; enrollments: number; capacity: number }[]
   > {
     await delay(300);
     return mockData.courses.map((course) => ({
       course: course.title,
       enrollments: course.enrolledStudents,
+      capacity: course.maxCapacity
     }));
   },
 
-  async getTopStudents(limit = 10): Promise<Student[]> {
+  async getTopStudents(limit = 5): Promise<Student[]> {
     await delay(300);
-    return [...mockData.students].sort((a, b) => b.gpa - a.gpa).slice(0, limit);
+    return [...mockData.students]
+      .filter(s => s.status === 'Active')
+      .sort((a, b) => b.gpa - a.gpa)
+      .slice(0, limit);
   },
 
-  async getPopularCourses(limit = 10): Promise<Course[]> {
+  async getPopularCourses(limit = 5): Promise<Course[]> {
     await delay(300);
     return [...mockData.courses]
       .sort((a, b) => b.enrolledStudents - a.enrolledStudents)
       .slice(0, limit);
+  },
+
+  async getRecentActivity(): Promise<any[]> {
+    await delay(300);
+    return [
+      { type: 'enrollment', student: 'John Smith', course: 'CSC101', time: '2 hours ago' },
+      { type: 'grade_update', student: 'Emma Johnson', course: 'MAT201', grade: 'A+', time: '4 hours ago' },
+      { type: 'course_added', course: 'Data Structures', instructor: 'Prof. Smith', time: '1 day ago' },
+      { type: 'student_added', student: 'Alex Turner', major: 'Computer Science', time: '2 days ago' },
+    ];
   },
 
   // Export
@@ -192,14 +247,37 @@ export const apiService = {
         data = [];
     }
 
-    const headers = Object.keys(data[0] || {});
+    if (data.length === 0) return '';
+
+    const headers = Object.keys(data[0]);
     const csv = [
       headers.join(","),
       ...data.map((row) =>
-        headers.map((header) => JSON.stringify((row as any)[header])).join(",")
+        headers.map((header) => {
+          const value = row[header as keyof typeof row];
+          return typeof value === 'string' && value.includes(',') 
+            ? `"${value}"` 
+            : String(value);
+        }).join(",")
       ),
     ].join("\n");
 
     return csv;
+  },
+
+  // System metrics
+  async getSystemMetrics(): Promise<{
+    serverStatus: 'online' | 'offline' | 'maintenance';
+    responseTime: number;
+    activeUsers: number;
+    storageUsed: string;
+  }> {
+    await delay(200);
+    return {
+      serverStatus: 'online',
+      responseTime: 120,
+      activeUsers: 42,
+      storageUsed: '2.3 GB'
+    };
   },
 };

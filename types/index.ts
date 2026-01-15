@@ -5,6 +5,7 @@ export interface Student {
   year: number;
   major: string;
   gpa: number;
+  status: 'Active' | 'Inactive' | 'Graduated';
   courses: string[];
   avatar?: string;
 }
