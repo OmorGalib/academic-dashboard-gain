@@ -6,7 +6,6 @@ import { apiService } from '@/services/api'
 import { Student, Course } from '@/types'
 import dynamic from 'next/dynamic'
 
-// Dynamically import chart components to avoid SSR issues
 const EnrollmentChart = dynamic(() => import('@/components/Charts/EnrollmentChart'), {
   ssr: false,
   loading: () => (
@@ -109,48 +108,45 @@ export default function ReportsPage() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Export Data</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
-            onClick={() => handleExport('students')}
             disabled={loading}
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
-              <UsersIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
+              <UsersIcon className="h-6 w-6 text-blue-400 mr-3 flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Students Data</p>
                 <p className="text-xs text-gray-500 truncate">Export all student records</p>
               </div>
             </div>
-            <DocumentArrowDownIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
+            <DocumentArrowDownIcon onClick={() => handleExport('students')} className="h-5 w-5 text-gray-400 flex-shrink-0 hover:text-blue-400" />
           </button>
 
           <button
-            onClick={() => handleExport('courses')}
             disabled={loading}
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
-              <AcademicCapIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
+              <AcademicCapIcon className="h-6 w-6 text-blue-400 mr-3 flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Courses Data</p>
                 <p className="text-xs text-gray-500 truncate">Export course information</p>
               </div>
             </div>
-            <DocumentArrowDownIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
+            <DocumentArrowDownIcon onClick={() => handleExport('courses')} className="h-5 w-5 text-gray-400 flex-shrink-0 hover:text-blue-400" />
           </button>
 
           <button
-            onClick={() => handleExport('grades')}
             disabled={loading}
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 sm:col-span-2 lg:col-span-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
-              <ChartBarIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
+              <ChartBarIcon className="h-6 w-6 text-blue-400 mr-3 flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">Grades Data</p>
                 <p className="text-xs text-gray-500 truncate">Export academic performance</p>
               </div>
             </div>
-            <DocumentArrowDownIcon className="h-5 w-5 text-gray-400 flex-shrink-0" />
+            <DocumentArrowDownIcon onClick={() => handleExport('grades')} className="h-5 w-5 text-gray-400 flex-shrink-0 hover:text-blue-400" />
           </button>
         </div>
       </div>
