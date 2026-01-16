@@ -3,6 +3,7 @@ Academic Dashboard
   A modern, responsive academic management dashboard built with Next.js, TypeScript, and Tailwind CSS. This dashboard helps administrators and faculty members manage students, courses, and analyze academic performance with beautiful visualizations
 
 ✨ Live Demo
+    https://academic-dashboard-gain.vercel.app/
 
 📸 Screenshots
 ![Dashboard](image.png)
