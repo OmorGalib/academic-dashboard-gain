@@ -1,11 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import { apiService } from '@/services/api'
-
-// Dynamically import ApexCharts for better performance
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
+import DynamicChart from './DynamicChart'
+import { ApexOptions } from 'apexcharts'
 
 interface EnrollmentData {
   course: string;
@@ -33,7 +31,7 @@ export default function EnrollmentChart() {
     }
   }
 
-  const chartOptions: any = {
+  const chartOptions: ApexOptions = {
     chart: {
       type: 'bar',
       height: 350,
@@ -48,7 +46,8 @@ export default function EnrollmentChart() {
           pan: true,
           reset: true
         }
-      }
+      },
+      fontFamily: 'Inter, sans-serif'
     },
     plotOptions: {
       bar: {
@@ -69,13 +68,24 @@ export default function EnrollmentChart() {
       categories: enrollmentData.map(item => item.course.split(' ').slice(0, 2).join(' ')),
       labels: {
         style: {
-          fontSize: '12px'
+          fontSize: '12px',
+          fontFamily: 'Inter, sans-serif'
         }
       }
     },
     yaxis: {
       title: {
-        text: 'Number of Students'
+        text: 'Number of Students',
+        style: {
+          fontSize: '14px',
+          fontFamily: 'Inter, sans-serif'
+        }
+      },
+      labels: {
+        style: {
+          fontSize: '12px',
+          fontFamily: 'Inter, sans-serif'
+        }
       }
     },
     fill: {
@@ -86,12 +96,41 @@ export default function EnrollmentChart() {
         formatter: function (val: number) {
           return val + " students"
         }
+      },
+      style: {
+        fontFamily: 'Inter, sans-serif'
       }
     },
     colors: ['#4F46E5', '#10B981'],
     legend: {
-      position: 'top'
-    }
+      position: 'top',
+      fontFamily: 'Inter, sans-serif'
+    },
+    grid: {
+      borderColor: '#e5e7eb'
+    },
+    responsive: [{
+      breakpoint: 640,
+      options: {
+        chart: {
+          height: 300
+        },
+        xaxis: {
+          labels: {
+            style: {
+              fontSize: '10px'
+            }
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              fontSize: '10px'
+            }
+          }
+        }
+      }
+    }]
   }
 
   const chartSeries = [
@@ -114,8 +153,8 @@ export default function EnrollmentChart() {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="bg-white shadow rounded-lg p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Course Enrollments</h3>
           <p className="text-sm text-gray-500">Current semester enrollment statistics</p>
@@ -127,14 +166,12 @@ export default function EnrollmentChart() {
         </select>
       </div>
       <div className="mt-4">
-        {typeof window !== 'undefined' && (
-          <Chart
-            options={chartOptions}
-            series={chartSeries}
-            type="bar"
-            height={350}
-          />
-        )}
+        <DynamicChart
+          options={chartOptions}
+          series={chartSeries}
+          type="bar"
+          height={350}
+        />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
         <div className="text-center">
@@ -145,8 +182,10 @@ export default function EnrollmentChart() {
         </div>
         <div className="text-center">
           <div className="font-medium text-gray-900">
-            {(enrollmentData.reduce((sum, item) => sum + item.enrollments, 0) / 
-              enrollmentData.reduce((sum, item) => sum + item.capacity, 0) * 100).toFixed(1)}%
+            {enrollmentData.reduce((sum, item) => sum + item.capacity, 0) > 0 
+              ? ((enrollmentData.reduce((sum, item) => sum + item.enrollments, 0) / 
+                  enrollmentData.reduce((sum, item) => sum + item.capacity, 0) * 100).toFixed(1)) + '%'
+              : '0%'}
           </div>
           <div className="text-gray-500">Overall Occupancy</div>
         </div>

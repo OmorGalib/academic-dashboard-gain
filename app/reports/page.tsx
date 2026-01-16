@@ -4,8 +4,52 @@ import { useState, useEffect } from 'react'
 import { ChartBarIcon, DocumentArrowDownIcon, AcademicCapIcon, UsersIcon } from '@heroicons/react/24/outline'
 import { apiService } from '@/services/api'
 import { Student, Course } from '@/types'
-import EnrollmentChart from '@/components/Charts/EnrollmentChart'
-import TopStudentsChart from '@/components/Charts/TopStudentsChart'
+import dynamic from 'next/dynamic'
+
+// Dynamically import chart components to avoid SSR issues
+const EnrollmentChart = dynamic(() => import('@/components/Charts/EnrollmentChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <div className="h-6 bg-gray-200 rounded w-48 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-100 rounded w-32 animate-pulse"></div>
+        </div>
+        <div className="h-8 bg-gray-200 rounded w-32 animate-pulse"></div>
+      </div>
+      <div className="h-64 bg-gray-100 animate-pulse rounded-lg"></div>
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="h-10 bg-gray-100 rounded animate-pulse"></div>
+        <div className="h-10 bg-gray-100 rounded animate-pulse"></div>
+      </div>
+    </div>
+  )
+})
+
+const TopStudentsChart = dynamic(() => import('@/components/Charts/TopStudentsChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-white shadow rounded-lg p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div>
+          <div className="h-6 bg-gray-200 rounded w-48 mb-2 animate-pulse"></div>
+          <div className="h-4 bg-gray-100 rounded w-32 animate-pulse"></div>
+        </div>
+        <div className="flex space-x-2">
+          <div className="h-8 bg-gray-200 rounded w-20 animate-pulse"></div>
+          <div className="h-8 bg-gray-200 rounded w-24 animate-pulse"></div>
+        </div>
+      </div>
+      <div className="h-64 bg-gray-100 animate-pulse rounded-lg"></div>
+      <div className="mt-6">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="h-12 bg-gray-100 rounded mb-2 animate-pulse"></div>
+        ))}
+      </div>
+    </div>
+  )
+})
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(false)
@@ -34,6 +78,7 @@ export default function ReportsPage() {
 
   const handleExport = async (type: 'students' | 'courses' | 'grades') => {
     try {
+      setLoading(true)
       const csv = await apiService.exportData(type)
       const blob = new Blob([csv], { type: 'text/csv' })
       const url = window.URL.createObjectURL(blob)
@@ -47,6 +92,8 @@ export default function ReportsPage() {
     } catch (error) {
       console.error('Error exporting data:', error)
       alert('Failed to export data. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -58,12 +105,13 @@ export default function ReportsPage() {
       </div>
 
       {/* Export Section */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white shadow rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Export Data</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <button
             onClick={() => handleExport('students')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            disabled={loading}
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
               <UsersIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -77,7 +125,8 @@ export default function ReportsPage() {
 
           <button
             onClick={() => handleExport('courses')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            disabled={loading}
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
               <AcademicCapIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -91,7 +140,8 @@ export default function ReportsPage() {
 
           <button
             onClick={() => handleExport('grades')}
-            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 sm:col-span-2 lg:col-span-1"
+            disabled={loading}
+            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 sm:col-span-2 lg:col-span-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center min-w-0">
               <ChartBarIcon className="h-6 w-6 text-gray-400 mr-3 flex-shrink-0" />
@@ -113,12 +163,13 @@ export default function ReportsPage() {
 
       {/* Quick Reports */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow rounded-lg p-4 sm:p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Performance</h3>
           {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading data...</p>
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-12 bg-gray-100 rounded animate-pulse"></div>
+              ))}
             </div>
           ) : (
             <div className="space-y-4">
@@ -140,18 +191,27 @@ export default function ReportsPage() {
           )}
         </div>
 
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white shadow rounded-lg p-4 sm:p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Reports</h3>
           <div className="space-y-3">
-            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button 
+              disabled={loading}
+              className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <p className="text-sm font-medium text-gray-900">Enrollment Summary</p>
               <p className="text-xs text-gray-500 mt-1">Current semester enrollment statistics</p>
             </button>
-            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button 
+              disabled={loading}
+              className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <p className="text-sm font-medium text-gray-900">Faculty Workload</p>
               <p className="text-xs text-gray-500 mt-1">Courses and students per faculty</p>
             </button>
-            <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button 
+              disabled={loading}
+              className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <p className="text-sm font-medium text-gray-900">Department Performance</p>
               <p className="text-xs text-gray-500 mt-1">Academic performance by department</p>
             </button>

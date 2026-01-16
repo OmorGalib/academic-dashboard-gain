@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Academic Dashboard
 
-## Getting Started
+  A modern, responsive academic management dashboard built with Next.js, TypeScript, and Tailwind CSS. This dashboard helps administrators and faculty members manage students, courses, and analyze academic performance with beautiful visualizations
 
-First, run the development server:
+✨ Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+📸 Screenshots
+![Dashboard](image.png)
+![Students](image-1.png)
+![Courses](image-2.png)
+![Faculty](image-3.png)
+![Reports](image-4.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#Prerequisites
+    Node.js 18.x or later
+    npm, yarn, or pnpm
+    Git
+#Installation
+    1.Clone the repository:
+        git clone https://github.com/OmorGalib/academic-dashboard-gain.git
+        cd academic-dashboard-gain
+    2.Install dependencies:
+        npm install
+        # or
+        yarn install
+        # or
+        pnpm install
+    3.Run development server:
+        npm run dev
+        # or
+        yarn dev
+        # or
+        pnpm dev
+    4.Open your browser:
+        Navigate to http://localhost:3000 to see the dashboard in action!
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🔧 Features
+🎯 Dashboard Features
+    Real-time Stats: View total students, courses, faculty, and average GPA
+    Top Students: Interactive leaderboard of highest GPA students
+    Popular Courses: Courses sorted by enrollment with progress indicators
+    Recent Activity: Track recent enrollments, grade updates, and student additions
+    System Metrics: Monitor server status and active users
 
-## Learn More
+👨‍🎓 Student Management
+    Student Directory: Complete list of all students
+    Advanced Search: Search by name, email, or student ID
+    Smart Filtering: Filter by year, major, and status
 
-To learn more about Next.js, take a look at the following resources:
+📚 Course Management
+    Course Catalog: View all available courses
+    Enrollment Tracking: Monitor enrolled vs capacity
+    Faculty Information: See which faculty teaches each course
+    Progress Bars: Visual representation of course enrollment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🎓 Faculty Panel
+    Faculty Directory: All faculty members with departments
+    Grade Management: Add or update student grades
+    Student Assignment: Assign students to specific courses
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+📊 Reports & Analytics
+    Interactive Charts: Course enrollments and student performance
+    Data Export: Export students, courses, and grades as CSV
+    Performance Analysis: Track GPA trends and pass rates
+    Quick Reports: Generate enrollment summaries and department performance
+    Top Performers: Identify top-performing students and popular courses
 
-## Deploy on Vercel
+📱 Responsive Design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🛠️ Built With
+    Next.js 14 - React framework with App Router
+    TypeScript - Type-safe JavaScript
+    Tailwind CSS - Utility-first CSS framework
+    ApexCharts - Interactive charts and graphs
+    React Query - Server state management
+    Axios - HTTP client for API calls
+    Heroicons - Beautiful hand-crafted SVG icons

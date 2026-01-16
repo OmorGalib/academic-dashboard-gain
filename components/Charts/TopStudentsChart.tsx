@@ -1,12 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import { apiService } from '@/services/api'
 import { Student } from '@/types'
-
-// Dynamically import ApexCharts for better performance
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false })
+import DynamicChart from './DynamicChart'
+import { ApexOptions } from 'apexcharts'
 
 export default function TopStudentsChart() {
   const [topStudents, setTopStudents] = useState<Student[]>([])
@@ -29,13 +27,14 @@ export default function TopStudentsChart() {
     }
   }
 
-  const chartOptions: any = {
+  const chartOptions: ApexOptions = {
     chart: {
       type: 'bar',
       height: 350,
       toolbar: {
         show: true
-      }
+      },
+      fontFamily: 'Inter, sans-serif'
     },
     plotOptions: {
       bar: {
@@ -46,10 +45,11 @@ export default function TopStudentsChart() {
     dataLabels: {
       enabled: true,
       formatter: function (val: number) {
-        return val.toFixed(2)
+        return viewType === 'gpa' ? val.toFixed(2) : val.toString()
       },
       style: {
         fontSize: '12px',
+        fontFamily: 'Inter, sans-serif',
         colors: ['#fff']
       }
     },
@@ -63,15 +63,23 @@ export default function TopStudentsChart() {
         text: viewType === 'gpa' ? 'GPA Score' : 'Number of Courses',
         style: {
           fontSize: '14px',
-          fontWeight: 600
+          fontWeight: 600,
+          fontFamily: 'Inter, sans-serif'
         }
       },
-      max: viewType === 'gpa' ? 4.0 : Math.max(...topStudents.map(s => s.courses?.length || 0)) + 1
+      max: viewType === 'gpa' ? 4.0 : Math.max(...topStudents.map(s => s.courses?.length || 0)) + 1,
+      labels: {
+        style: {
+          fontSize: '12px',
+          fontFamily: 'Inter, sans-serif'
+        }
+      }
     },
     yaxis: {
       labels: {
         style: {
-          fontSize: '12px'
+          fontSize: '12px',
+          fontFamily: 'Inter, sans-serif'
         }
       }
     },
@@ -83,11 +91,46 @@ export default function TopStudentsChart() {
             ? `GPA: ${val.toFixed(2)}`
             : `Courses: ${val}`
         }
+      },
+      style: {
+        fontFamily: 'Inter, sans-serif'
       }
     },
     grid: {
-      borderColor: '#f1f1f1'
-    }
+      borderColor: '#e5e7eb'
+    },
+    responsive: [{
+      breakpoint: 640,
+      options: {
+        chart: {
+          height: 300
+        },
+        dataLabels: {
+          style: {
+            fontSize: '10px'
+          }
+        },
+        xaxis: {
+          title: {
+            style: {
+              fontSize: '12px'
+            }
+          },
+          labels: {
+            style: {
+              fontSize: '10px'
+            }
+          }
+        },
+        yaxis: {
+          labels: {
+            style: {
+              fontSize: '10px'
+            }
+          }
+        }
+      }
+    }]
   }
 
   const chartSeries = [
@@ -108,7 +151,7 @@ export default function TopStudentsChart() {
   }
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
+    <div className="bg-white shadow rounded-lg p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Top Performing Students</h3>
@@ -117,44 +160,42 @@ export default function TopStudentsChart() {
         <div className="flex space-x-2">
           <button
             onClick={() => setViewType('gpa')}
-            className={`px-3 py-1 text-sm rounded-md ${viewType === 'gpa' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${viewType === 'gpa' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
             By GPA
           </button>
           <button
             onClick={() => setViewType('courses')}
-            className={`px-3 py-1 text-sm rounded-md ${viewType === 'courses' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'}`}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${viewType === 'courses' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
           >
             By Course Load
           </button>
         </div>
       </div>
       <div className="mt-4">
-        {typeof window !== 'undefined' && (
-          <Chart
-            options={chartOptions}
-            series={chartSeries}
-            type="bar"
-            height={350}
-          />
-        )}
+        <DynamicChart
+          options={chartOptions}
+          series={chartSeries}
+          type="bar"
+          height={350}
+        />
       </div>
       <div className="mt-6">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead>
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Major</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">GPA</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Courses</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Major</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">GPA</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Courses</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               {topStudents.map((student, index) => (
                 <tr key={student.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 whitespace-nowrap">
+                  <td className="px-3 py-3 whitespace-nowrap">
                     <div className={`flex items-center justify-center h-6 w-6 rounded-full ${
                       index === 0 ? 'bg-yellow-100 text-yellow-800' :
                       index === 1 ? 'bg-gray-100 text-gray-800' :
@@ -164,20 +205,27 @@ export default function TopStudentsChart() {
                       {index + 1}
                     </div>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
+                  <td className="px-3 py-3 whitespace-nowrap">
                     <div className="flex items-center">
                       <img
                         className="h-8 w-8 rounded-full mr-2"
                         src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${student.avatar || student.name}`}
                         alt={student.name}
                       />
-                      <span className="text-sm font-medium text-gray-500">{student.name}</span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                          {student.name}
+                        </div>
+                        <div className="text-xs text-gray-500 sm:hidden">
+                          {student.major}
+                        </div>
+                      </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                     {student.major}
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
+                  <td className="px-3 py-3 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       student.gpa >= 3.8 ? 'bg-green-100 text-green-800' :
                       student.gpa >= 3.5 ? 'bg-yellow-100 text-yellow-800' :
@@ -186,7 +234,7 @@ export default function TopStudentsChart() {
                       {student.gpa.toFixed(2)}
                     </span>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
                     {student.courses?.length || 0}
                   </td>
                 </tr>
